@@ -1,0 +1,33 @@
+{
+  "name": "deadair",
+  "version": "0.1.0",
+  "private": true,
+  "description": "A small self-hosted media server for your own films and shows, watched in any browser",
+  "author": "Nathan Sachs",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/n-th-n-n/deadair-server.git"
+  },
+  "main": "server/index.js",
+  "scripts": {
+    "prestart": "node scripts/preflight.mjs",
+    "start": "node server/index.js",
+    "up": "node scripts/run.mjs",
+    "dev": "node --watch server/index.js",
+    "https": "node scripts/https.mjs",
+    "setup:cloud": "node scripts/setup-cloudflare.mjs",
+    "add-user": "node scripts/add-user.mjs",
+    "inventory": "node scripts/inventory.mjs",
+    "service:install": "node scripts/service.mjs install",
+    "service:uninstall": "node scripts/service.mjs uninstall",
+    "service:status": "node scripts/service.mjs status",
+    "test": "node --test test/*.test.js"
+  },
+  "engines": {
+    "node": ">=22.18"
+  },
+  "dependencies": {
+    "express": "^5.2.1"
+  }
+}

@@ -1,0 +1,17 @@
+# auth-gateway: login checks against the shared users-db users table, for servers
+# that live outside Cloudflare (e.g. Deadair on a machine at home).
+# Deploy:  npx wrangler deploy
+# Secret:  npx wrangler secret put GATEWAY_SECRET   (same value as the caller's AUTH_GATEWAY_SECRET)
+name = "auth-gateway"
+main = "src/index.ts"
+compatibility_date = "2026-06-18"
+# Your Cloudflare account id (dash.cloudflare.com, right-hand sidebar), so wrangler never deploys
+# to the wrong account.
+account_id = "REPLACE_WITH_YOUR_ACCOUNT_ID"
+workers_dev = true
+preview_urls = false
+
+[[d1_databases]]
+binding = "DB"
+database_name = "users-db"
+database_id = "REPLACE_WITH_YOUR_USERS_DATABASE_ID"

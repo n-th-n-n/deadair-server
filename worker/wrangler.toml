@@ -1,0 +1,16 @@
+# deadair-api: Deadair's data (libraries, watch history, TMDB matches, account records) in D1.
+# Set up / redeploy everything with `npm run setup:cloud` from the project folder.
+name = "deadair-api"
+main = "src/index.ts"
+compatibility_date = "2026-06-18"
+# Your Cloudflare account id (dash.cloudflare.com, right-hand sidebar), so wrangler never deploys
+# to the wrong account.
+account_id = "REPLACE_WITH_YOUR_ACCOUNT_ID"
+workers_dev = true
+preview_urls = false
+
+[[d1_databases]]
+binding = "DATA_DB"
+database_name = "deadair-db"
+database_id = "REPLACE_WITH_ID_FROM_wrangler_d1_create"
+migrations_dir = "migrations"

@@ -1,0 +1,39 @@
+# HTTPS for Deadair on a private custom domain (reachable only over Tailscale).
+#
+# The domain's DNS record points at this machine's Tailscale IP, so only your own
+# devices can reach it. Certificates come from Let's Encrypt via a DNS challenge on
+# Cloudflare, so the server never has to be reachable from the internet.
+#
+# Run from the project folder:  npm run https   (updates DNS, finds the Tailscale IP, starts Caddy)
+# Needs Caddy built with the Cloudflare DNS module and CF_DNS_API_TOKEN in .env.
+{$DEADAIR_DOMAIN:deadair.example.com} {
+	# Tailscale only: connections from anywhere else (e.g. your home Wi-Fi) are dropped.
+	# (Binding to just the Tailscale address would need root on macOS for port 443.)
+	@not_tailnet not remote_ip 100.64.0.0/10 fd7a:115c:a1e0::/48 127.0.0.1/8 ::1
+	abort @not_tailnet
+	tls {
+		dns cloudflare {env.CF_DNS_API_TOKEN}
+	}
+	reverse_proxy localhost:{$PORT:8420} {
+		# Send video to the browser as it's produced (transcodes are streamed).
+		flush_interval -1
+	}
+}
+
+# Chromecast (see server/cast.js). A Chromecast can't use Tailscale, so it fetches videos from
+# this name instead, which points at this machine's HOME-NETWORK address. It's served only to
+# devices on your home network (or tailnet), and only for /cast/… links: each carries a signed,
+# expiring token for one video. Every other path is dropped, so the rest of Deadair stays
+# Tailscale-only. Nothing here is reachable from the internet (no port forwarding).
+{$CAST_DOMAIN:cast.deadair.example.com} {
+	@not_home not remote_ip 192.168.0.0/16 10.0.0.0/8 172.16.0.0/12 100.64.0.0/10 fd00::/8 fe80::/10 fd7a:115c:a1e0::/48 127.0.0.1/8 ::1
+	abort @not_home
+	@not_cast not path /cast/*
+	abort @not_cast
+	tls {
+		dns cloudflare {env.CF_DNS_API_TOKEN}
+	}
+	reverse_proxy localhost:{$PORT:8420} {
+		flush_interval -1
+	}
+}
